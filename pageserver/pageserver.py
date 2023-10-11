@@ -95,23 +95,27 @@ def respond(sock):
 
     parts = request.split()
     if len(parts) > 1 and parts[0] == "GET":
+        print("PARTS IS", parts)
         link = parts[1]
+        print("LINK IS",link)
         link = link[1:]
         print("LINK IS", link)
         if '..' in link or '~' in link:
             transmit(STATUS_FORBIDDEN, sock)
+            transmit("ERROR 403: Illegal character used",sock)
         elif link == '':
             transmit(STATUS_OK, sock)
             transmit(CAT, sock)
+
         else:
-            file_path = os.path.join("pages",link)
+            file_path = os.path.join(pages,link)
             if os.path.exists(file_path):
                 with open(file_path, 'r') as file:
-                    content = file.read()
-                    response = STATUS_OK + content
-                    transmit(response, sock)
+                    transmit(STATUS_OK, sock)
+                    transmit(file.read(),sock)
             else:
                 transmit(STATUS_NOT_FOUND,sock)
+                transmit("ERROR 404: The file can not be found",sock)
             
             
 
@@ -161,6 +165,7 @@ def get_options():
 def main():
     options = get_options()
     port = options.PORT
+    pages = options.DOCROOT
     if options.DEBUG:
         log.setLevel(logging.DEBUG)
     sock = listen(port)

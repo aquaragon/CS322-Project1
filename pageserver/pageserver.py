@@ -92,7 +92,8 @@ def respond(sock):
     request = str(request, encoding='utf-8', errors='strict')
     log.info("--- Received request ----")
     log.info("Request was {}\n***\n".format(request))
-
+    options = get_options()
+    pages = options.DOCROOT
     parts = request.split()
     if len(parts) > 1 and parts[0] == "GET":
         print("PARTS IS", parts)
